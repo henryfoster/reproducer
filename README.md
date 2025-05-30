@@ -1,3 +1,22 @@
+# Reproducer for: https://github.com/zenstruck/foundry/issues/909
+
+## Steps top reproduce
+1. Run `docker compose build --pull --no-cache` to build fresh images
+2. Run `docker compose up --wait` to set up and start a fresh Symfony project
+3. run `docker compose exec -T php bin/console do:fi:lo` to load the fixtures
+
+2 order items will be loaded one with poisition=1 and one with position=2
+The position column is unique but set to deferred see migraions: ALTER TABLE "order" ADD CONSTRAINT unq_order_position UNIQUE (position) DEFERRABLE INITIALLY DEFERRED
+This means the constraint is only applied at the transaction.
+
+4. visit the page "/" it will switch the positions sucessfully [{"id":1,"name":"order1","position":1},{"id":2,"name":"order2","position":2}] will become [{"id":1,"name":"order1","position":2},{"id":2,"name":"order2","position":1}] when you refresh.
+
+5. now run test "SwitchTest". All it does is visit this page `docker compose exec -T php bin/phpunit`
+It fails with  An exception occurred while executing a query: SQLSTATE[23505]: Unique violation: 7 ERROR:  duplicate key value violates unique constraint "unq_order_position"
+DETAIL:  Key ("position")=(2) already exists." at ExceptionConverter.php line 53
+
+
+
 # Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
