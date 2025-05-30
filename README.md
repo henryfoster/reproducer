@@ -9,7 +9,7 @@
 The position column is unique but set to deferred see migraions: ALTER TABLE "order" ADD CONSTRAINT unq_order_position UNIQUE (position) DEFERRABLE INITIALLY DEFERRED
 This means the constraint is only applied at the transaction.
 
-4. visit the page "/" it will switch the positions sucessfully [{"id":1,"name":"order1","position":1},{"id":2,"name":"order2","position":2}] will become [{"id":1,"name":"order1","position":2},{"id":2,"name":"order2","position":1}] when you refresh.
+4. visit the page "https://localhost" it will switch the positions sucessfully [{"id":1,"name":"order1","position":1},{"id":2,"name":"order2","position":2}] will become [{"id":1,"name":"order1","position":2},{"id":2,"name":"order2","position":1}] when you refresh.
 
 5. now run test "SwitchTest". All it does is visit this page `docker compose exec -T php bin/phpunit`
 It fails with  An exception occurred while executing a query: SQLSTATE[23505]: Unique violation: 7 ERROR:  duplicate key value violates unique constraint "unq_order_position"
